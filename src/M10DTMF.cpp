@@ -99,6 +99,52 @@ static uint8_t key_map[16] = {0x1, 0x2, 0x3, 0xA,
                               0x7, 0x8, 0x9, 0xC,
                               0xE, 0x0, 0xF, 0xD};
 
+                              
+                              
+                              
+                              
+                              
+                              
+
+//----------------------------------------------------------------------------
+// codec_isr_handler()
+//
+// Parameters:
+//      None
+//
+// Return Value:
+//      None
+//
+// Remarks:
+//      CODEC ISR for sample collection
+//----------------------------------------------------------------------------
+
+static void codec_isr_handler()
+{
+    uint8_t high, low;
+    uint8_t wav_buf_write_pointer_next;
+    uint16_t sample;
+
+    //== wav_buf_write_pointer_next = (wav_buf_write_pointer + 1) & SAMPLE_BUFFER_SIZE_MASK;
+    wav_buf_write_pointer_next = wav_buf_write_pointer + 1;
+
+    if (wav_buf_read_pointer == wav_buf_write_pointer_next) { // buffer full
+        return;
+    }
+
+    high = CODEC_READ_DATA_HIGH;
+    low  = CODEC_READ_DATA_LOW;
+
+    sample = ((uint16_t)high << 8) + low;
+  
+    wav_samp_buffer[wav_buf_write_pointer++] = sample;
+
+    //== wav_buf_write_pointer = (wav_buf_write_pointer + 1) & SAMPLE_BUFFER_SIZE_MASK;
+  
+} // End of codec_isr_handler()
+
+                              
+                              
 //----------------------------------------------------------------------------
 // search_for_max()
 //
@@ -189,46 +235,6 @@ void dtmf_reinit()
       
   interrupts();
 } // dtmf_reinit()
-
-
-
-//----------------------------------------------------------------------------
-// codec_isr_handler()
-//
-// Parameters:
-//      None
-//
-// Return Value:
-//      None
-//
-// Remarks:
-//      CODEC ISR for sample collection
-//----------------------------------------------------------------------------
-
-static void codec_isr_handler()
-{
-    uint8_t high, low;
-    uint8_t wav_buf_write_pointer_next;
-    uint16_t sample;
-
-    //== wav_buf_write_pointer_next = (wav_buf_write_pointer + 1) & SAMPLE_BUFFER_SIZE_MASK;
-    wav_buf_write_pointer_next = wav_buf_write_pointer + 1;
-
-    if (wav_buf_read_pointer == wav_buf_write_pointer_next) { // buffer full
-        return;
-    }
-
-    high = CODEC_READ_DATA_HIGH;
-    low  = CODEC_READ_DATA_LOW;
-
-    sample = ((uint16_t)high << 8) + low;
-  
-    wav_samp_buffer[wav_buf_write_pointer++] = sample;
-
-    //== wav_buf_write_pointer = (wav_buf_write_pointer + 1) & SAMPLE_BUFFER_SIZE_MASK;
-  
-} // End of codec_isr_handler()
-
 
 
 //----------------------------------------------------------------------------
