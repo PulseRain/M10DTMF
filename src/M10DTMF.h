@@ -26,9 +26,9 @@
 
 
 typedef struct {
-    void (*begin)();
-    void (*reinit)();
-    int8_t (*decode)();    
+    void (*begin)() __reentrant;
+    void (*reinit)() __reentrant;
+    int8_t (*decode)() __reentrant;    
 }M10DTMF_STRUCT;
 
 extern const M10DTMF_STRUCT DTMF;

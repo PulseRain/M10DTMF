@@ -105,7 +105,6 @@ static uint8_t key_map[16] = {0x1, 0x2, 0x3, 0xA,
                               
                               
                               
-
 //----------------------------------------------------------------------------
 // codec_isr_handler()
 //
@@ -144,7 +143,6 @@ static void codec_isr_handler()
 } // End of codec_isr_handler()
 
                               
-                              
 //----------------------------------------------------------------------------
 // search_for_max()
 //
@@ -159,7 +157,7 @@ static void codec_isr_handler()
 //      function to search for the frequency that has the highest power
 //----------------------------------------------------------------------------
   
-static void search_for_max(uint8_t start_index, uint8_t end_index) 
+static void search_for_max(uint8_t start_index, uint8_t end_index) __reentrant
 {
   
     max_X_square = X_square[start_index];
@@ -193,12 +191,13 @@ static void search_for_max(uint8_t start_index, uint8_t end_index)
 //      call this function to initialize the CODEC and ISR
 //----------------------------------------------------------------------------
 
-static void dtmf_begin()
+static void dtmf_begin() __reentrant
 {
     attachIsrHandler(CODEC_INT_INDEX, codec_isr_handler);
     CODEC.begin();
 } // End of dtmf_begin();
 
+                              
 
 //----------------------------------------------------------------------------
 // dtmf_reinit()
@@ -214,7 +213,7 @@ static void dtmf_begin()
 //      buffer with zero
 //----------------------------------------------------------------------------
 
-void dtmf_reinit()
+void dtmf_reinit() __reentrant
 {
   uint8_t wav_buf_write_pointer_next;
 
@@ -253,7 +252,7 @@ void dtmf_reinit()
 //      main function to decode DTMF
 //----------------------------------------------------------------------------
 
-static int8_t dtmf_decoder() 
+int8_t dtmf_decoder() __reentrant
 { 
 
     while (wav_buf_write_pointer != wav_buf_read_pointer) {
@@ -422,3 +421,4 @@ const M10DTMF_STRUCT DTMF = {
     dtmf_reinit,  // reinit
     dtmf_decoder  // decode
 };
+
